@@ -1,20 +1,21 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Wallet, Plus, ArrowDownUp } from "lucide-react";
+import { Wallet, Plus, ArrowDownUp, AlertCircle } from "lucide-react";
 import { useState } from "react";
 import { DepositDialog } from "./DepositDialog";
 import { WithdrawDialog } from "./WithdrawDialog";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 interface WalletHeaderProps {
   balance: number;
-  onDeposit: () => void;
-  onWithdraw: () => void;
+  isKycVerified: boolean;
+  onConnectWallet: () => Promise<void>;
 }
 
 export function WalletHeader({
   balance,
-  onDeposit,
-  onWithdraw,
+  isKycVerified,
+  onConnectWallet,
 }: WalletHeaderProps) {
   const [depositOpen, setDepositOpen] = useState(false);
   const [withdrawOpen, setWithdrawOpen] = useState(false);
@@ -27,39 +28,59 @@ export function WalletHeader({
             <Wallet className="w-8 h-8" />
             <div>
               <p className="text-sm text-white/70">Available Balance</p>
-              <p className="text-2xl font-bold">₹{balance.toLocaleString()}</p>
+              <p className="text-2xl font-bold">{balance} SOL</p>
             </div>
           </div>
-          <div className="flex gap-2">
-            <Button
-              variant="secondary"
-              className="bg-white/10 hover:bg-white/20 text-white"
-              onClick={() => setDepositOpen(true)}
-            >
-              <Plus className="w-4 h-4 mr-2" />
-              Deposit
-            </Button>
-            <Button
-              variant="secondary"
-              className="bg-white/10 hover:bg-white/20 text-white"
-              onClick={() => setWithdrawOpen(true)}
-            >
-              <ArrowDownUp className="w-4 h-4 mr-2" />
-              Withdraw
-            </Button>
+          <div className="flex items-center gap-2">
+            {balance === 0 ? (
+              <Button
+                onClick={onConnectWallet}
+                variant="secondary"
+                className="bg-white/10 hover:bg-white/20"
+              >
+                Connect Wallet
+              </Button>
+            ) : (
+              <>
+                <Button
+                  onClick={() => setDepositOpen(true)}
+                  variant="secondary"
+                  className="bg-white/10 hover:bg-white/20"
+                >
+                  <Plus className="w-4 h-4 mr-2" />
+                  Deposit
+                </Button>
+                <Button
+                  onClick={() => setWithdrawOpen(true)}
+                  variant="secondary"
+                  className="bg-white/10 hover:bg-white/20"
+                >
+                  <ArrowDownUp className="w-4 h-4 mr-2" />
+                  Withdraw
+                </Button>
+              </>
+            )}
           </div>
         </div>
+        {!isKycVerified && (
+          <Alert className="mt-4 bg-yellow-500/10 border-yellow-500/50">
+            <AlertCircle className="h-4 w-4 text-yellow-500" />
+            <AlertDescription className="text-yellow-500">
+              Complete KYC verification to enable fiat deposits and withdrawals
+            </AlertDescription>
+          </Alert>
+        )}
       </Card>
 
       <DepositDialog
         open={depositOpen}
         onClose={() => setDepositOpen(false)}
-        onDeposit={onDeposit}
+        isKycVerified={isKycVerified}
       />
       <WithdrawDialog
         open={withdrawOpen}
         onClose={() => setWithdrawOpen(false)}
-        onWithdraw={onWithdraw}
+        balance={balance}
       />
     </>
   );

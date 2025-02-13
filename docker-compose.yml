@@ -1,0 +1,72 @@
+version: '3.8'
+services:
+  solana-node:
+    image: solanalabs/solana:v1.17.7
+    ports:
+      - "8899:8899"
+      - "8900:8900"
+    volumes:
+      - solana-data:/root/.local/share/solana/install
+    command: >
+      bash -c "
+      solana-keygen new --no-bip39-passphrase -o /root/.config/solana/id.json &&
+      solana-test-validator
+      --rpc-port 8899
+      --bind-address 0.0.0.0
+      --no-bpf-jit
+      --log -
+      "
+    environment:
+      - RUST_LOG=solana_runtime::system_instruction_processor=trace,solana_runtime::message_processor=debug,solana_bpf_loader=debug,solana_rbpf=debug
+      
+  postgres:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_USER: zibsolx
+      POSTGRES_PASSWORD: zibsolx_secret
+      POSTGRES_DB: zibsolx
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U zibsolx"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    command: redis-server --appendonly yes
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  price-feed:
+    build:
+      context: ./price-feed
+      dockerfile: Dockerfile
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      solana-node:
+        condition: service_started
+    environment:
+      - DATABASE_URL=postgresql://zibsolx:zibsolx_secret@postgres:5432/zibsolx
+      - REDIS_URL=redis://redis:6379
+      - SOLANA_RPC_URL=http://solana-node:8899
+    ports:
+      - "3002:3002"
+
+volumes:
+  solana-data:
+  postgres-data:
+  redis-data:

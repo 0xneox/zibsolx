@@ -10,7 +10,7 @@ export function ChainSelector({ selectedView, onSelect }: ChainSelectorProps) {
   return (
     <Tabs
       value={selectedView}
-      onValueChange={(value: any) => onSelect(value)}
+      onValueChange={(value: "trending" | "new" | "all" | "gainers") => onSelect(value)}
       className="w-full"
     >
       <TabsList className="grid grid-cols-4 w-full max-w-[600px]">

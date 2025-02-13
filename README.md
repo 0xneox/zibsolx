@@ -1,30 +1,71 @@
-# React + TypeScript + Vite
+# ZibFin - India's Most User-Friendly Crypto Trading Platform
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+ZibFin is a revolutionary crypto trading platform designed for mass adoption in India. Built on Solana for lightning-fast trades and minimal fees.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- 🚀 One-Click Trading
+- 💸 Low Fees (from 0.1%)
+- 🎁 Referral Rewards
+- 💰 Daily Trading Contests
+- 🏦 UPI/Bank Deposits
+- ⚡ Instant Withdrawals
+- 📊 Simple Charts
+- 🛡️ Secure Storage
 
-## Expanding the ESLint configuration
+## Getting Started
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
-
-- Configure the top-level `parserOptions` property like this:
-
-```js
-export default {
-  // other rules...
-  parserOptions: {
-    ecmaVersion: 'latest',
-    sourceType: 'module',
-    project: ['./tsconfig.json', './tsconfig.node.json'],
-    tsconfigRootDir: __dirname,
-  },
-}
+1. Clone the repository:
+```bash
+git clone https://github.com/yourusername/zibfin.git
+cd zibfin
 ```
 
-- Replace `plugin:@typescript-eslint/recommended` to `plugin:@typescript-eslint/recommended-type-checked` or `plugin:@typescript-eslint/strict-type-checked`
-- Optionally add `plugin:@typescript-eslint/stylistic-type-checked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and add `plugin:react/recommended` & `plugin:react/jsx-runtime` to the `extends` list
+2. Install dependencies:
+```bash
+npm install
+```
+
+3. Set up environment variables:
+```bash
+cp .env.example .env
+# Edit .env with your values
+```
+
+4. Start development server:
+```bash
+npm run dev
+```
+
+## Technology Stack
+
+- ⚛️ React + TypeScript
+- 🎨 TailwindCSS
+- ⚡ Vite
+- 🌐 Solana Web3.js
+- 🔄 Jupiter SDK
+- 💳 Razorpay
+
+## Documentation
+
+- [API Documentation](./docs/API.md)
+- [Architecture](./docs/ARCHITECTURE.md)
+- [Contributing](./docs/CONTRIBUTING.md)
+
+## Security
+
+- Multi-sig treasury
+- Regular audits
+- Real-time monitoring
+- Automated testing
+
+## Support
+
+Need help? Contact us:
+- 📧 support@zibfin.com
+- 💬 t.me/zibfin
+- 🐦 @zibfin
+
+## License
+
+Copyright 2025 ZibFin. All rights reserved.

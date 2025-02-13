@@ -7,17 +7,19 @@
     "skipLibCheck": true,
     "noEmitOnError": false,
 
-    "moduleResolution": "bundler",
-    "allowImportingTsExtensions": true,
+    "moduleResolution": "node",
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
     "jsx": "react-jsx",
+    "allowJs": true,
+    "esModuleInterop": true,
 
     "strict": false,
     "paths": {
       "@/*": ["./src/*"]
-    }
+    },
+    "baseUrl": "."
   },
   "include": ["src"],
   "exclude": ["src/tempobook"],

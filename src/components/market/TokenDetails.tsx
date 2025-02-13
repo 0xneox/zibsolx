@@ -1,274 +1,125 @@
-import { useEffect, useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { TokenDetails as TokenDetailsType } from "@/types/market";
-import { getTokenDetails } from "@/lib/api";
-import {
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  Tooltip,
-  ResponsiveContainer,
-} from "recharts";
-import {
-  ExternalLink,
-  Twitter,
-  MessageCircle,
-  Rocket,
-  AlertTriangle,
-  Users,
-  Wallet,
-} from "lucide-react";
-import { Progress } from "@/components/ui/progress";
-import { Alert, AlertDescription } from "@/components/ui/alert";
+import { useEffect, useState } from 'react';
+import { TokenData } from '../../types';
+import { marketService } from '../../services/MarketService';
+import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../ui/table';
+import { useToast } from '../ui/use-toast';
+import { formatDistance } from 'date-fns';
 
 interface TokenDetailsProps {
-  tokenAddress: string;
-  chain: string;
-  open: boolean;
-  onClose: () => void;
+  address: string;
 }
 
-export function TokenDetailsDialog({
-  tokenAddress,
-  chain,
-  open,
-  onClose,
-}: TokenDetailsProps) {
-  const [details, setDetails] = useState<TokenDetailsType | null>(null);
+export function TokenDetails({ address }: TokenDetailsProps) {
+  const [token, setToken] = useState<TokenData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const { toast } = useToast();
 
   useEffect(() => {
-    if (open && tokenAddress) {
-      loadTokenDetails();
-    }
-  }, [tokenAddress, open]);
+    fetchTokenDetails();
+  }, [address]);
 
-  const loadTokenDetails = async () => {
-    setLoading(true);
-    const data = await getTokenDetails(tokenAddress, chain);
-    setDetails(data);
-    setLoading(false);
+  const fetchTokenDetails = async () => {
+    try {
+      setLoading(true);
+      const data = await marketService.getMarketData();
+      const tokenDetails = data.find(t => t.address === address);
+      if (!tokenDetails) {
+        throw new Error('Token not found');
+      }
+      setToken(tokenDetails);
+      setError(null);
+    } catch (err) {
+      console.error('Error fetching token details:', err);
+      setError('Failed to fetch token details');
+      toast({
+        title: 'Error',
+        description: 'Failed to fetch token details. Please try again later.',
+        variant: 'destructive',
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
-  if (!details || loading) {
-    return null;
+  if (loading) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle>Token Details</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="flex items-center justify-center p-4">
+            <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin" />
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  if (error || !token) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle>Token Details</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="text-center text-red-500">{error || 'Token not found'}</div>
+        </CardContent>
+      </Card>
+    );
   }
 
   return (
-    <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="max-w-4xl">
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-3">
-            <img src={details.image} alt={details.name} className="w-8 h-8" />
-            {details.name} ({details.symbol.toUpperCase()})
-          </DialogTitle>
-        </DialogHeader>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <Card className="md:col-span-2">
-            <CardHeader>
-              <CardTitle>Price Chart</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="h-[300px]">
-                <ResponsiveContainer width="100%" height="100%">
-                  <LineChart data={details.chart_data}>
-                    <XAxis
-                      dataKey="timestamp"
-                      tickFormatter={(timestamp) =>
-                        new Date(timestamp * 1000).toLocaleDateString()
-                      }
-                    />
-                    <YAxis />
-                    <Tooltip
-                      formatter={(value: number) => [
-                        `₹${value.toLocaleString()}`,
-                        "Price",
-                      ]}
-                      labelFormatter={(timestamp) =>
-                        new Date(timestamp * 1000).toLocaleString()
-                      }
-                    />
-                    <Line
-                      type="monotone"
-                      dataKey="price"
-                      stroke="#8884d8"
-                      dot={false}
-                    />
-                  </LineChart>
-                </ResponsiveContainer>
-              </div>
-            </CardContent>
-          </Card>
-
-          <div className="space-y-6">
-            <Alert>
-              <AlertTriangle className="h-4 w-4" />
-              <AlertDescription>
-                DYOR! This is a memecoin. High risk, high reward!
-              </AlertDescription>
-            </Alert>
-
-            <Card>
-              <CardContent className="p-6">
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm text-muted-foreground">Price</p>
-                      <p className="text-2xl font-bold">
-                        ₹{details.price_inr.toLocaleString()}
-                      </p>
-                    </div>
-                    <div
-                      className={`text-right ${details.price_change_percentage_24h >= 0 ? "text-green-600" : "text-red-600"}`}
-                    >
-                      <p className="text-sm text-muted-foreground">
-                        24h Change
-                      </p>
-                      <p className="text-xl font-bold">
-                        {details.price_change_percentage_24h.toFixed(2)}%
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="space-y-2">
-                    <div className="flex justify-between text-sm">
-                      <span className="text-muted-foreground">Market Cap</span>
-                      <span>₹{details.market_cap.toLocaleString()}</span>
-                    </div>
-                    <div className="flex justify-between text-sm">
-                      <span className="text-muted-foreground">24h Volume</span>
-                      <span>₹{details.total_volume.toLocaleString()}</span>
-                    </div>
-                    {details.holders && (
-                      <div className="flex justify-between text-sm">
-                        <span className="flex items-center gap-1">
-                          <Users className="w-4 h-4" />
-                          Holders
-                        </span>
-                        <span>{details.holders.toLocaleString()}</span>
-                      </div>
-                    )}
-                    {details.liquidity && (
-                      <div className="flex justify-between text-sm">
-                        <span className="flex items-center gap-1">
-                          <Wallet className="w-4 h-4" />
-                          Liquidity
-                        </span>
-                        <span>₹{details.liquidity.toLocaleString()}</span>
-                      </div>
-                    )}
-                  </div>
-
-                  {details.launch_date && (
-                    <div className="pt-2">
-                      <p className="text-sm text-muted-foreground mb-1">Age</p>
-                      <div className="flex items-center gap-2">
-                        <Rocket className="w-4 h-4" />
-                        <span>
-                          {new Date(details.launch_date).toLocaleDateString()}(
-                          {Math.floor(
-                            (Date.now() -
-                              new Date(details.launch_date).getTime()) /
-                              (1000 * 60 * 60 * 24),
-                          )}{" "}
-                          days old)
-                        </span>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardContent className="p-6">
-                <div className="space-y-4">
-                  <div>
-                    <p className="text-sm text-muted-foreground">Price</p>
-                    <p className="text-2xl font-bold">
-                      ₹{details.price_inr.toLocaleString()}
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-muted-foreground">24h Change</p>
-                    <p
-                      className={`text-lg font-semibold ${details.price_change_percentage_24h >= 0 ? "text-green-600" : "text-red-600"}`}
-                    >
-                      {details.price_change_percentage_24h.toFixed(2)}%
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-muted-foreground">Market Cap</p>
-                    <p className="text-lg font-semibold">
-                      ₹{details.market_cap.toLocaleString()}
-                    </p>
-                  </div>
-                  {details.holders && (
-                    <div>
-                      <p className="text-sm text-muted-foreground">Holders</p>
-                      <p className="text-lg font-semibold">
-                        {details.holders.toLocaleString()}
-                      </p>
-                    </div>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-
-            <div className="space-y-3">
-              {details.buy_links.map((link) => (
-                <Button
-                  key={link.name}
-                  className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white"
-                  size="lg"
-                  onClick={() => window.open(link.url, "_blank")}
-                >
-                  Buy on {link.name}
-                  <ExternalLink className="w-4 h-4 ml-2" />
-                </Button>
-              ))}
-            </div>
-
-            {(details.twitter || details.telegram) && (
-              <Card>
-                <CardContent className="p-6">
-                  <div className="space-y-3">
-                    {details.twitter && (
-                      <Button
-                        variant="outline"
-                        className="w-full"
-                        onClick={() => window.open(details.twitter, "_blank")}
-                      >
-                        <Twitter className="w-4 h-4 mr-2" />
-                        Twitter
-                      </Button>
-                    )}
-                    {details.telegram && (
-                      <Button
-                        variant="outline"
-                        className="w-full"
-                        onClick={() => window.open(details.telegram, "_blank")}
-                      >
-                        <MessageCircle className="w-4 h-4 mr-2" />
-                        Telegram
-                      </Button>
-                    )}
-                  </div>
-                </CardContent>
-              </Card>
-            )}
+    <Card>
+      <CardHeader>
+        <div className="flex items-center space-x-4">
+          {token.logo && (
+            <img
+              src={token.logo}
+              alt={token.symbol}
+              className="w-12 h-12 rounded-full"
+            />
+          )}
+          <div>
+            <CardTitle>{token.name}</CardTitle>
+            <div className="text-sm text-muted-foreground">{token.symbol}</div>
           </div>
         </div>
-      </DialogContent>
-    </Dialog>
+      </CardHeader>
+      <CardContent>
+        <Table>
+          <TableBody>
+            <TableRow>
+              <TableCell className="font-medium">Price</TableCell>
+              <TableCell>${token.price.toFixed(6)}</TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell className="font-medium">24h Volume</TableCell>
+              <TableCell>${token.volume24h.toLocaleString()}</TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell className="font-medium">Market Cap</TableCell>
+              <TableCell>${token.marketCap.toLocaleString()}</TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell className="font-medium">Liquidity</TableCell>
+              <TableCell>${token.liquidity.toLocaleString()}</TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell className="font-medium">Holders</TableCell>
+              <TableCell>{token.holders.toLocaleString()}</TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell className="font-medium">Last Updated</TableCell>
+              <TableCell>
+                {formatDistance(new Date(token.lastUpdated), new Date(), { addSuffix: true })}
+              </TableCell>
+            </TableRow>
+          </TableBody>
+        </Table>
+      </CardContent>
+    </Card>
   );
 }

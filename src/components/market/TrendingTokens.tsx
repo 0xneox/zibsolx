@@ -1,72 +1,102 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { TokenData } from "@/types/market";
-import { Avatar } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
-import { TrendingUp, Sparkles } from "lucide-react";
+import React, { useState, useEffect } from 'react';
+import { Card } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 
-interface TrendingTokensProps {
-  tokens: TokenData[];
+interface TrendingToken {
+  symbol: string;
+  name: string;
+  price: number;
+  change24h: number;
+  volume24h: number;
 }
 
-export function TrendingTokens({ tokens }: TrendingTokensProps) {
+export function TrendingTokens() {
+  const [tokens, setTokens] = useState<TrendingToken[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    // Simulated data - replace with actual API call
+    const mockData: TrendingToken[] = [
+      {
+        symbol: 'BONK',
+        name: 'Bonk',
+        price: 0.00000123,
+        change24h: 15.5,
+        volume24h: 1234567
+      },
+      {
+        symbol: 'WIF',
+        name: 'Wif',
+        price: 0.0123,
+        change24h: -5.2,
+        volume24h: 987654
+      },
+      {
+        symbol: 'MYRO',
+        name: 'Myro',
+        price: 0.00456,
+        change24h: 25.7,
+        volume24h: 456789
+      },
+      {
+        symbol: 'BOME',
+        name: 'Book of Meme',
+        price: 0.0789,
+        change24h: 8.9,
+        volume24h: 345678
+      }
+    ];
+
+    setTokens(mockData);
+    setLoading(false);
+  }, []);
+
+  const formatPrice = (price: number) => {
+    if (price < 0.00001) return price.toExponential(4);
+    return price.toFixed(6);
+  };
+
+  const formatVolume = (volume: number) => {
+    if (volume >= 1000000) return `$${(volume / 1000000).toFixed(1)}M`;
+    if (volume >= 1000) return `$${(volume / 1000).toFixed(1)}K`;
+    return `$${volume.toFixed(0)}`;
+  };
+
   return (
-    <Card className="bg-gradient-to-br from-purple-900 to-indigo-900 text-white">
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <TrendingUp className="w-5 h-5" />
-          Trending
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {tokens.slice(0, 3).map((token) => (
-            <Card
-              key={token.id}
-              className="bg-white/10 backdrop-blur-lg border-0"
-            >
-              <CardContent className="p-4">
-                <div className="flex items-center gap-3">
-                  <Avatar className="h-10 w-10">
-                    <img src={token.image} alt={token.name} />
-                  </Avatar>
+    <Card className="bg-gray-900 border-gray-800">
+      <div className="divide-y divide-gray-800">
+        {loading ? (
+          <div className="p-4 text-center text-gray-400">Loading...</div>
+        ) : (
+          tokens.map((token) => (
+            <div key={token.symbol} className="p-4 hover:bg-gray-800/50 transition-colors">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-3">
+                  <div className="w-8 h-8 bg-gray-800 rounded-full flex items-center justify-center">
+                    {token.symbol.charAt(0)}
+                  </div>
                   <div>
-                    <h3 className="font-semibold flex items-center gap-2">
-                      {token.name}
-                      {token.launch_date &&
-                        new Date(token.launch_date).getTime() >
-                          Date.now() - 86400000 * 7 && (
-                          <Badge className="bg-green-500">
-                            <Sparkles className="w-3 h-3 mr-1" />
-                            New
-                          </Badge>
-                        )}
-                    </h3>
-                    <p className="text-sm text-white/70">
-                      {token.symbol.toUpperCase()}
-                    </p>
+                    <h3 className="font-medium">{token.name}</h3>
+                    <p className="text-sm text-gray-400">{token.symbol}</p>
                   </div>
                 </div>
-                <div className="mt-3 flex justify-between items-center">
-                  <div>
-                    <p className="text-sm text-white/70">Price</p>
-                    <p className="font-medium">
-                      ₹{token.price_inr.toLocaleString()}
-                    </p>
-                  </div>
-                  <div
-                    className={`text-right ${token.price_change_percentage_24h >= 0 ? "text-green-400" : "text-red-400"}`}
+                <div className="text-right">
+                  <p className="font-medium">${formatPrice(token.price)}</p>
+                  <Badge 
+                    variant={token.change24h >= 0 ? "success" : "destructive"}
+                    className="mt-1"
                   >
-                    <p className="text-sm">24h</p>
-                    <p className="font-medium">
-                      {token.price_change_percentage_24h.toFixed(2)}%
-                    </p>
-                  </div>
+                    {token.change24h >= 0 ? '+' : ''}{token.change24h}%
+                  </Badge>
                 </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      </CardContent>
+              </div>
+              <div className="mt-2 text-sm text-gray-400">
+                24h Volume: {formatVolume(token.volume24h)}
+              </div>
+            </div>
+          ))
+        )}
+      </div>
     </Card>
   );
 }

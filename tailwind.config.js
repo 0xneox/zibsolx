@@ -2,12 +2,13 @@
 module.exports = {
   darkMode: ["class"],
   content: [
+    "./index.html",
+    "./src/**/*.{js,ts,jsx,tsx}",
     './pages/**/*.{ts,tsx}',
     './components/**/*.{ts,tsx}',
     './app/**/*.{ts,tsx}',
     './src/**/*.{ts,tsx}',
   ],
-  prefix: "",
   theme: {
     container: {
       center: true,
@@ -24,12 +25,30 @@ module.exports = {
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
         primary: {
-          DEFAULT: "hsl(var(--primary))",
+          DEFAULT: "#0066FF",
           foreground: "hsl(var(--primary-foreground))",
+          100: "#E6F0FF",
+          200: "#CCE0FF",
+          300: "#99C2FF",
+          400: "#66A3FF",
+          500: "#0066FF",
+          600: "#0052CC",
+          700: "#003D99",
+          800: "#002966",
+          900: "#001433"
         },
         secondary: {
-          DEFAULT: "hsl(var(--secondary))",
+          DEFAULT: "#00D4B0",
           foreground: "hsl(var(--secondary-foreground))",
+          100: "#E6FAF7",
+          200: "#CCF5EF",
+          300: "#99EBE0",
+          400: "#66E2D1",
+          500: "#00D4B0",
+          600: "#00AA8D",
+          700: "#007F6A",
+          800: "#005546",
+          900: "#002A23"
         },
         destructive: {
           DEFAULT: "hsl(var(--destructive))",
@@ -51,20 +70,25 @@ module.exports = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        'primary': '#8B5CF6',
+        'secondary': '#EC4899',
       },
       borderRadius: {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
       },
+      backgroundImage: {
+        'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
+      },
       keyframes: {
         "accordion-down": {
-          from: { height: "0" },
+          from: { height: 0 },
           to: { height: "var(--radix-accordion-content-height)" },
         },
         "accordion-up": {
           from: { height: "var(--radix-accordion-content-height)" },
-          to: { height: "0" },
+          to: { height: 0 },
         },
       },
       animation: {

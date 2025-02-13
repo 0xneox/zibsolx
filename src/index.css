@@ -1,76 +1,210 @@
 @tailwind base;
-  @tailwind components;
-  @tailwind utilities;
+@tailwind components;
+@tailwind utilities;
 
-  @layer base {
-    :root {
-      --background: 0 0% 100%;
-      --foreground: 222.2 84% 4.9%;
+@layer base {
+  :root {
+    --background: 222 47% 11%;
+    --foreground: 214 32% 91%;
+    
+    --card: 222 47% 11%;
+    --card-foreground: 214 32% 91%;
+    
+    --popover: 222 47% 11%;
+    --popover-foreground: 214 32% 91%;
+    
+    --primary: 217 100% 50%;
+    --primary-foreground: 210 40% 98%;
+    
+    --secondary: 174 100% 42%;
+    --secondary-foreground: 210 40% 98%;
+    
+    --muted: 223 47% 11%;
+    --muted-foreground: 215.4 16.3% 56.9%;
+    
+    --accent: 217 100% 50%;
+    --accent-foreground: 210 40% 98%;
+    
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
 
-      --card: 0 0% 100%;
-      --card-foreground: 222.2 84% 4.9%;
+    --border: 217 100% 50%;
+    --input: 217 100% 50%;
+    --ring: 217 100% 50%;
+    
+    --radius: 0.75rem;
+  }
+ 
+  .dark {
+    --background: 222 47% 11%;
+    --foreground: 214 32% 91%;
+    
+    --card: 222 47% 11%;
+    --card-foreground: 214 32% 91%;
+    
+    --popover: 222 47% 11%;
+    --popover-foreground: 214 32% 91%;
+    
+    --primary: 217 100% 50%;
+    --primary-foreground: 210 40% 98%;
+    
+    --secondary: 174 100% 42%;
+    --secondary-foreground: 210 40% 98%;
+    
+    --muted: 223 47% 11%;
+    --muted-foreground: 215.4 16.3% 56.9%;
+    
+    --accent: 217 100% 50%;
+    --accent-foreground: 210 40% 98%;
+    
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+ 
+    --border: 217 100% 50%;
+    --input: 217 100% 50%;
+    --ring: 217 100% 50%;
+  }
+}
 
-      --popover: 0 0% 100%;
-      --popover-foreground: 222.2 84% 4.9%;
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
 
-      --primary: 222.2 47.4% 11.2%;
-      --primary-foreground: 210 40% 98%;
-
-      --secondary: 210 40% 96.1%;
-      --secondary-foreground: 222.2 47.4% 11.2%;
-
-      --muted: 210 40% 96.1%;
-      --muted-foreground: 215.4 16.3% 46.9%;
-
-      --accent: 210 40% 96.1%;
-      --accent-foreground: 222.2 47.4% 11.2%;
-
-      --destructive: 0 84.2% 60.2%;
-      --destructive-foreground: 210 40% 98%;
-
-      --border: 214.3 31.8% 91.4%;
-      --input: 214.3 31.8% 91.4%;
-      --ring: 222.2 84% 4.9%;
-
-      --radius: 0.5rem;
-    }
-
-    .dark {
-      --background: 222.2 84% 4.9%;
-      --foreground: 210 40% 98%;
-
-      --card: 222.2 84% 4.9%;
-      --card-foreground: 210 40% 98%;
-
-      --popover: 222.2 84% 4.9%;
-      --popover-foreground: 210 40% 98%;
-
-      --primary: 210 40% 98%;
-      --primary-foreground: 222.2 47.4% 11.2%;
-
-      --secondary: 217.2 32.6% 17.5%;
-      --secondary-foreground: 210 40% 98%;
-
-      --muted: 217.2 32.6% 17.5%;
-      --muted-foreground: 215 20.2% 65.1%;
-
-      --accent: 217.2 32.6% 17.5%;
-      --accent-foreground: 210 40% 98%;
-
-      --destructive: 0 62.8% 30.6%;
-      --destructive-foreground: 210 40% 98%;
-
-      --border: 217.2 32.6% 17.5%;
-      --input: 217.2 32.6% 17.5%;
-      --ring: 212.7 26.8% 83.9%;
-    }
+/* Enhanced Animations and Interactions */
+@layer utilities {
+  /* Smooth Scrolling */
+  html {
+    scroll-behavior: smooth;
   }
 
-  @layer base {
-    * {
-      @apply border-border;
-    }
-    body {
-      @apply bg-background text-foreground;
-    }
+  /* Button Interactions */
+  .btn-hover {
+    @apply transition-all duration-200 ease-out;
   }
+  .btn-hover:hover {
+    @apply transform -translate-y-0.5 shadow-lg;
+    filter: brightness(110%);
+  }
+  .btn-hover:active {
+    @apply transform translate-y-0 shadow-md;
+  }
+
+  /* Card Interactions */
+  .card-hover {
+    @apply transition-all duration-300 ease-out;
+  }
+  .card-hover:hover {
+    @apply transform -translate-y-1;
+    box-shadow: 0 20px 25px -5px rgba(0, 102, 255, 0.1),
+                0 10px 10px -5px rgba(0, 102, 255, 0.04);
+  }
+
+  /* Input Focus Effects */
+  .input-focus {
+    @apply transition-all duration-200;
+  }
+  .input-focus:focus {
+    @apply ring-2 ring-primary/50 ring-offset-2 ring-offset-background;
+  }
+
+  /* Logo Animations */
+  .logo-animate {
+    @apply transition-all duration-300;
+    filter: drop-shadow(0 0 10px rgba(0, 102, 255, 0.3));
+  }
+  .logo-animate:hover {
+    filter: drop-shadow(0 0 15px rgba(0, 102, 255, 0.5));
+    transform: scale(1.05) rotate(5deg);
+  }
+
+  /* Price Changes */
+  .price-up {
+    @apply text-green-500;
+    animation: priceUp 0.5s ease-out;
+  }
+  .price-down {
+    @apply text-red-500;
+    animation: priceDown 0.5s ease-out;
+  }
+
+  /* Chart Tooltips */
+  .chart-tooltip {
+    @apply transition-all duration-200;
+    backdrop-filter: blur(8px);
+    background: rgba(0, 102, 255, 0.1);
+    border: 1px solid rgba(0, 102, 255, 0.2);
+  }
+
+  /* Mobile Touch Feedback */
+  .touch-feedback {
+    @apply active:scale-95 active:opacity-80;
+    transition: transform 0.1s ease-out, opacity 0.1s ease-out;
+  }
+
+  /* Navigation Links */
+  .nav-link {
+    @apply relative transition-all duration-200;
+  }
+  .nav-link::after {
+    @apply absolute bottom-0 left-0 w-0 h-0.5 bg-primary transition-all duration-200;
+    content: '';
+  }
+  .nav-link:hover::after {
+    @apply w-full;
+  }
+
+  /* Notification Badge */
+  .notification-badge {
+    animation: notificationPop 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  }
+}
+
+/* Keyframe Animations */
+@keyframes priceUp {
+  0% { background-color: rgba(0, 255, 0, 0); }
+  50% { background-color: rgba(0, 255, 0, 0.1); }
+  100% { background-color: rgba(0, 255, 0, 0); }
+}
+
+@keyframes priceDown {
+  0% { background-color: rgba(255, 0, 0, 0); }
+  50% { background-color: rgba(255, 0, 0, 0.1); }
+  100% { background-color: rgba(255, 0, 0, 0); }
+}
+
+@keyframes notificationPop {
+  0% { transform: scale(0); }
+  50% { transform: scale(1.2); }
+  100% { transform: scale(1); }
+}
+
+/* Mobile Optimizations */
+@media (max-width: 768px) {
+  .touch-area {
+    @apply min-h-[44px] min-w-[44px];
+  }
+  
+  .mobile-press {
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+  }
+}
+
+/* Custom animations */
+.logo-glow {
+  filter: drop-shadow(0 0 10px rgba(0, 102, 255, 0.5));
+}
+
+.logo-hover {
+  transition: all 0.3s ease;
+}
+
+.logo-hover:hover {
+  filter: drop-shadow(0 0 15px rgba(0, 102, 255, 0.7));
+  transform: scale(1.05);
+}
